@@ -1,0 +1,38 @@
+.counter {
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+.number {
+  font-size: 60px;
+  font-weight: bold;
+  font-family: poppins;
+}
+.btns {
+  display: inline-flex;
+  gap: 20px;
+}
+.btns button {
+  appearance: none;
+  border: none;
+  padding: 20px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: cadetblue;
+  font-family: poppins;
+  font-size: 1rem;
+}
+.btns button:hover {
+  background-color: rgb(64, 99, 100);
+}
+.btns .reset {
+  background-color: brown;
+  color: white;
+}
+.btns .reset:hover {
+  background-color: rgb(99, 24, 24);
+}

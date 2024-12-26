@@ -1,0 +1,38 @@
+.card {
+  padding: 20px;
+  list-style: none;
+  background-color: #e7e7e7;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px #a0a0a034;
+  font-family: poppins, "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+.card li {
+  color: #e7e7e7;
+}
+.changeColor {
+  appearance: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #1b1b1b;
+  cursor: pointer;
+  font-family: poppins, sans-serif;
+  border-radius: 4px;
+  background-color: #1b1b1b;
+  padding: 10px 20px;
+  transition: border-color 0.1s ease-out, background-color 0.5s ease-in-out;
+}
+.changeColor:hover {
+    border-color: cadetblue;
+    color: #bdbdbd;
+}
+.changeColor:active {
+    background-color: cadetblue;
+    color: #fff;
+}
+.userCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
