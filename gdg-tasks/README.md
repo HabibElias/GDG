@@ -1,50 +1,159 @@
-# React + TypeScript + Vite
+# GDG Task: Demonstrating State and Props
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project demonstrates the use of state and props in a React application.
 
-Currently, two official plugins are available:
+## Introduction
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project helped me understand how to use state and props in React. State allows you to manage data within a component, while props enable you to pass data between components.
 
-## Expanding the ESLint configuration
+## Components
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+The project includes the following components:
 
-- Configure the top-level `parserOptions` property like this:
+- `App`: The main component that renders other components.
+- `Counter`: A component that demonstrates the use of state.
+- `UserCard`: A component that demonstrates the use of props.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## State
+
+State is used to manage data within a component. Here is an example of a component using state:
+
+```jsx
+import { useState } from "react";
+import "./style.css";
+
+const Counter = () => {
+  const [number, setNumber] = useState(0);
+
+  const increment = () => setNumber(number + 1);
+  const decrement = () => setNumber(number - 1);
+
+  return (
+    <div className="counter">
+      <div className="number">{number}</div>
+      <div className="btns">
+        <button onClick={increment}>Increment</button>
+        <button disabled={number == 0 ? true : false} onClick={decrement}>
+          Decrement
+        </button>
+        <button className="reset" onClick={() => setNumber(0)}>
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Counter;
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Props
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Props are used to pass data from one component to another. Here is an example of a component using props:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```jsx
+import "./styles.css";
+
+interface prop {
+  name: string;
+  email: string;
+  age: number;
+  color: string;
+  onColor: () => void;
+}
+
+const UserCard = ({ name, email, age, color, onColor }: prop) => {
+  return (
+    <div className="userCard">
+      <button className="changeColor" onClick={onColor}>
+        Change Color
+      </button>
+      <ul className="card" style={{ background: color, color: "#111" }}>
+        <li>Name: {name}</li>
+        <li>Email: {email}</li>
+        <li>Age: {age}</li>
+      </ul>
+    </div>
+  );
+};
+
+export default UserCard;
+```
+
+## Apps Component
+
+The main component that renders other components.
+
+```jsx
+import { useState } from "react";
+import Counter from "./components/Counter";
+import UserCard from "./components/UserCard";
+import "./App.css";
+
+function App() {
+  // display true display's the counter if true or the user prop if not
+  const [display, setDisplay] = useState(true);
+  const [color, onColor] = useState("#4B0082");
+
+  // the colors used for the userCard
+  const colors = [
+    "#B8860B",
+    "#A9A9A9",
+    "#BDB76B",
+    "#778899",
+    "#8B4513",
+    "#A0522D",
+    "#CD853F",
+    "#D2691E",
+    "#8B0000",
+    "#A52A2A",
+    "#B22222",
+    "#8B008B",
+    "#556B2F",
+    "#6B8E23",
+    "#2F4F4F",
+    "#4682B4",
+    "#5F9EA0",
+    "#8B4513",
+    "#A0522D",
+    "#6A5ACD",
+    "#483D8B",
+    "#4B0082",
+    "#800080",
+    "#8A2BE2",
+    "#9400D3",
+  ];
+
+  const getRandomColor = () => {
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+  };
+
+  return (
+    <>
+      <div className="displayBtns">
+        <button disabled={display} onClick={() => setDisplay(true)}>
+          State
+        </button>
+        <button disabled={!display} onClick={() => setDisplay(false)}>
+          Prop
+        </button>
+      </div>
+      <div className="app">
+        {display && <Counter />}
+        {!display && (
+          <UserCard
+            name={"Habib Elias"}
+            email={"habibelias234@gmail.com"}
+            color={color}
+            age={20}
+            onColor={() => onColor(getRandomColor)}
+          />
+        )}
+      </div>
+    </>
+  );
+}
+
+export default App;
 ```
