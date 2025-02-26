@@ -1,134 +1,167 @@
-import { useEffect, useState } from "react";
-import Card from "./components/Card";
-import Note from "./model/Note";
+import { CheckSquare, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import AddPopUp from "./components/AddPopUp";
-import EditPopUp from "./components/EditPopUp/EditPopUp";
+import Card from "./components/Card";
+import EditPopUp from "./components/EditPopUp";
+import Task from "./model/Task";
 
 function App() {
-  const [open, setOpen] = useState<boolean>(false);
-  const [openEdit, setOpenEdit] = useState<boolean>(false);
-  const [editId, setEditId] = useState<number>(0);
+  const [openAdd, setOpenAdd] = useState<boolean>(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpenAdd = () => setOpenAdd(true);
+  const handleCloseAdd = () => setOpenAdd(false);
+
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
 
   const handleOpenEdit = () => setOpenEdit(true);
   const handleCloseEdit = () => setOpenEdit(false);
 
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 0,
-      note: "Meeting with the team to discuss project updates.",
-      date: new Date("2024-02-12"),
-    },
-    {
-      id: 1,
-      note: "Buy groceries: milk, bread, eggs, and cheese.",
-      date: new Date("2024-02-14"),
-    },
-    {
-      id: 2,
-      note: "Doctor's appointment at 3 PM.",
-      date: new Date("2024-02-13"),
-    },
-    {
-      id: 3,
-      note: "Finish the quarterly financial report.",
-      date: new Date("2024-02-13"),
-    },
-    {
-      id: 4,
-      note: "Call the electrician to fix the kitchen light.",
-      date: new Date("2024-02-1"),
-    },
-    {
-      id: 5,
-      note: "Plan the weekend trip itinerary.",
-      date: new Date("2024-02-1"),
-    },
-    {
-      id: 6,
-      note: "Read the new book on software architecture.",
-      date: new Date("2024-02-1"),
-    },
-    {
-      id: 7,
-      note: "Prepare presentation slides for Monday's meeting.",
-      date: new Date("2024-02-1"),
-    },
-  ]);
+  {
+    // the tasks state
+  }
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
-  let editedNote = notes.find((n) => n.id == editId)?.note;
+  const [editedTask, setEditedTask] = useState<Task>({} as Task);
 
-  useEffect(() => {
-    editedNote = notes.find((n) => n.id == editId)?.note;
-  }, [editId]);
+  const handleEdit = (taskId: number) => {
+    const task = tasks.find((t) => t.id == taskId);
+    if (!task) return;
 
-  const handleDelete = (id: number) => {
-    setNotes(notes.filter((note) => note.id !== id));
-  };
-  const handleEdit = (id: number) => {
-    setEditId(id);
-    console.log(editId);
+    setEditedTask(task);
     handleOpenEdit();
   };
 
+  const handleStatus = (id: number) =>
+    setTasks(tasks.map((t) => (t.id === id ? { ...t, status: !t.status } : t)));
+
+  const handleDelete = (id: number) =>
+    setTasks(tasks.filter((t) => t.id !== id));
+
+  const saveToLocal = () => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  };
+
+  const loadFromLocal = () => {
+    const savedTasks = localStorage.getItem("tasks");
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+  };
+
+  const isInitialMount = useRef(true);
+
+  // Load tasks from local storage when the component mounts
+  useEffect(() => {
+    loadFromLocal();
+  }, []);
+
+  // Save tasks to local storage whenever tasks change
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      saveToLocal();
+    }
+  }, [tasks]);
+
   return (
-    <>
-      <div className="py-4 px-4">
-        <h1 className="font-bold text-4xl font-[poppins]">📒 Notify</h1>
+    <div className="flex h-[100vh] flex-col overflow-auto bg-[#130020] px-[var(--pad)] py-10 font-[poppins] text-purple-50 [--pad:50px] md:[--pad:100px] lg:[--pad:120px]">
+      <AddPopUp
+        open={openAdd}
+        handleClose={handleCloseAdd}
+        setTasks={setTasks}
+        tasks={tasks}
+      />
+      <EditPopUp
+        open={openEdit}
+        tasks={tasks}
+        setTasks={setTasks}
+        editedTask={editedTask}
+        handleClose={handleCloseEdit}
+      />
+      <header>
+        <h1 className="logo text-3xl font-bold">Task Management</h1>
+        <p className="text-gray-400">
+          Let's get productive! Add your tasks below
+        </p>
+      </header>
 
-        <div className="mt-8">
-          <button 
-            onClick={handleOpen}
-            className="flex items-center p-3 shadow-2xs shadow-[#00000042] hover:shadow-xl font-[poppins] bg-gray-100 hover:bg-gray-600 active:bg-gray-700 hover:text-gray-50 w-[max-content] cursor-pointer rounded-2xl duration-100 ease-in"
-          >
-            <p className="px-3 py-1.5 mr-2 rounded-full bg-gray-50 text-gray-500">
-              +
-            </p>
-            Create a Note
-          </button>
-        </div>
+      <div className="mt-8">
+        <button
+          onClick={handleOpenAdd}
+          className="flex w-max cursor-pointer items-center rounded-2xl bg-gray-100 p-3 font-[poppins] text-purple-950 shadow-2xs shadow-purple-900 duration-100 ease-in hover:bg-purple-600 hover:text-gray-50 hover:shadow-xl active:bg-purple-900"
+        >
+          <p className="mr-2 rounded-full bg-gray-50 p-2 text-gray-500">
+            <Plus />
+          </p>
+          Add a Task
+        </button>
+      </div>
 
-        <AddPopUp
-          open={open}
-          notes={notes}
-          setNotes={setNotes}
-          handleClose={handleClose}
-        />
-        <EditPopUp
-          editedNote={editedNote || ""}
-          open={openEdit}
-          notes={notes}
-          id={editId}
-          handleClose={handleCloseEdit}
-          setNotes={setNotes}
-        />
+      <p className="mt-12 flex items-center justify-between text-gray-400">
+        Tasks
+        <button
+          onClick={() => setIsCompleted(!isCompleted)}
+          className={`flex animate-bounce cursor-pointer items-center ${isCompleted ? "animate-pulse text-purple-400" : "text-gray-600"} duration-200 hover:text-purple-100`}
+        >
+          <CheckSquare size={40} />
+          Completed
+        </button>
+      </p>
 
-        <h1 className="font-[poppins] text-2xl my-12">All Notes</h1>
-
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-30 gap-y-7">
-          {notes.map((note, index) => {
-            return (
+      <div className="mt-4 flex flex-2 flex-wrap items-start gap-12 space-y-6">
+        {
+          // Card display
+        }
+        {!isCompleted
+          ? tasks.map((task, index) => (
               <Card
                 handleEdit={handleEdit}
                 key={index}
+                task={task}
+                handleStatus={handleStatus}
                 handleDelete={handleDelete}
-                note={note}
               />
-            );
-          })}
-          {notes.length == 0 && (
-            <div className="size-90 bg-gray-100 flex text-2xl rounded-3xl font-[poppins] text-gray-600 items-center justify-center">
-              📝 No Note Added Yet
-            </div>
-          )}
-        </div>
+            ))
+          : tasks
+              .filter((t) => t.status)
+              .map((task, index) => (
+                <Card
+                  handleEdit={handleEdit}
+                  key={index}
+                  task={task}
+                  handleStatus={handleStatus}
+                  handleDelete={handleDelete}
+                />
+              ))}
+
+        {
+          //If there is no task
+        }
+        {tasks.length == 0 && (
+          <div
+            className={`flex size-90 items-center justify-center gap-5 rounded-2xl bg-purple-950 p-4 transition-colors duration-100 ease-in`}
+          >
+            <p className="text-center text-2xl">No Task Yet🥳</p>
+          </div>
+        )}
+
+        {
+          // if there is no completed task
+        }
+        {isCompleted && tasks.filter((t) => t.status).length == 0 && (
+          <div
+            className={`flex size-90 items-center justify-center gap-5 rounded-2xl bg-purple-950 p-4 transition-colors duration-100 ease-in`}
+          >
+            <p className="text-center text-2xl">No Completed Task Yet😔</p>
+          </div>
+        )}
       </div>
-      <footer className="text-center font-bold font-[poppins] tracking-tight text-gray-400 py-20">
-        All rights reserved Habib Elias @2025
+      <footer className="justify-self-end text-center">
+        All right reserved &copy; 2025 Habib Elias
       </footer>
-    </>
+    </div>
   );
 }
 
