@@ -127,3 +127,12 @@
      </div>
   </form>
   ```
+<<<<<<< HEAD
+=======
+
+  # Tech Used
+  - React, Tailwind, and lucid icons
+ 
+  #deployement
+  https://taskmanager-nine-snowy.vercel.app
+>>>>>>> b4eead3d41ca064dbafd2c051f87192b897743bc
