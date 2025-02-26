@@ -40,7 +40,11 @@ const Card = ({ task, handleStatus, handleDelete, handleEdit }: Props) => {
           // Description
         }
         <p className="text-[0.8rem] text-gray-300">Description</p>
-        <p className="mb-5 flex-2 text-[1rem] text-gray-200">{task.desc}</p>
+        <p
+          className={`mb-5 flex-2 overflow-auto text-[1rem] text-gray-200 ${!task.status ? "scrollbar" : "scrollbar-none"}`}
+        >
+          {task.desc}
+        </p>
 
         {
           // Status

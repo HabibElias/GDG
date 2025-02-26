@@ -20,7 +20,7 @@ const AddPopUp = ({
   const [taskDate, setTaskDate] = useState<string>(
     editedTask.dueDate && !isNaN(new Date(editedTask.dueDate).getTime())
       ? new Date(editedTask.dueDate).toISOString().split("T")[0]
-      : ""
+      : "",
   );
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const AddPopUp = ({
     setTaskDate(
       editedTask.dueDate && !isNaN(new Date(editedTask.dueDate).getTime())
         ? new Date(editedTask.dueDate).toISOString().split("T")[0]
-        : ""
+        : "",
     );
   }, [editedTask]);
 
@@ -79,7 +79,7 @@ const AddPopUp = ({
       <div
         className={`${
           open ? "fixed" : "hidden"
-        } top-1/4 left-1/6 z-10 size-90 overflow-auto bg-[#e3c1ff27] backdrop-blur-xl lg:left-1/4 lg:size-6/12`}
+        } top-1/5 left-1/6 z-10 size-8/12 overflow-auto bg-[#e3c1ff27] backdrop-blur-xl`}
       >
         <form onSubmit={handleSubmit} className="flex h-[100%] flex-col p-5">
           <label className="mb-4 font-[poppins] text-xl font-bold text-gray-50">
@@ -90,7 +90,7 @@ const AddPopUp = ({
           }
           <label
             htmlFor="taskTitle"
-            className="mb-4 font-[poppins] text-xl text-gray-400"
+            className="mb-2 font-[poppins] text-2xs text-gray-400"
           >
             Title
           </label>
@@ -105,7 +105,7 @@ const AddPopUp = ({
           />
           <label
             htmlFor="due"
-            className="my-4 font-[poppins] text-xl text-gray-400"
+            className="my-2 font-[poppins] text-2xs text-gray-400"
           >
             Due
           </label>
@@ -119,7 +119,7 @@ const AddPopUp = ({
           />
           <label
             htmlFor="taskDesc"
-            className="my-4 font-[poppins] text-xl text-gray-400"
+            className="my-2 font-[poppins] text-2xs text-gray-400"
           >
             Description
           </label>
