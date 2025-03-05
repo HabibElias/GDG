@@ -1,20 +1,16 @@
-import { useState, FormEvent, useEffect } from "react";
-import Task from "../model/Task";
 import { Save, X } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
+import useTasks from "../hooks/useTasks";
 
 const AddPopUp = ({
   open,
   handleClose,
-  editedTask,
-  tasks,
-  setTasks,
 }: {
   open: boolean;
   handleClose: () => void;
-  editedTask: Task;
-  tasks: Task[];
-  setTasks: (tasks: Task[]) => void;
 }) => {
+  const { editedTask, dispatch } = useTasks();
+
   const [taskTitle, setTaskTitle] = useState<string>(editedTask.title || "");
   const [taskDesc, setTaskDesc] = useState<string>(editedTask.desc || "");
   const [taskDate, setTaskDate] = useState<string>(
@@ -41,19 +37,17 @@ const AddPopUp = ({
       return;
     }
 
-    setTasks(
-      tasks.map((t) =>
-        t.id == editedTask.id
-          ? {
-              id: editedTask.id,
-              title: taskTitle,
-              desc: taskDesc,
-              dueDate: new Date(taskDate),
-              status: false,
-            }
-          : t,
-      ),
-    );
+    dispatch({
+      type: "EDIT",
+      taskId: editedTask.id,
+      task: {
+        id: editedTask.id,
+        title: taskTitle,
+        desc: taskDesc,
+        dueDate: new Date(taskDate),
+        status: false,
+      },
+    });
 
     setTaskTitle("");
     setTaskDesc("");
@@ -90,7 +84,7 @@ const AddPopUp = ({
           }
           <label
             htmlFor="taskTitle"
-            className="mb-2 font-[poppins] text-2xs text-gray-400"
+            className="text-2xs mb-2 font-[poppins] text-gray-400"
           >
             Title
           </label>
@@ -105,7 +99,7 @@ const AddPopUp = ({
           />
           <label
             htmlFor="due"
-            className="my-2 font-[poppins] text-2xs text-gray-400"
+            className="text-2xs my-2 font-[poppins] text-gray-400"
           >
             Due
           </label>
@@ -119,7 +113,7 @@ const AddPopUp = ({
           />
           <label
             htmlFor="taskDesc"
-            className="my-2 font-[poppins] text-2xs text-gray-400"
+            className="text-2xs my-2 font-[poppins] text-gray-400"
           >
             Description
           </label>

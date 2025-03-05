@@ -1,8 +1,10 @@
 import { CheckSquare, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import AddPopUp from "./components/AddPopUp";
-import Card from "./components/Card";
+import Cards from "./components/Cards";
 import EditPopUp from "./components/EditPopUp";
+import Header from "./components/Header";
+import useTasks from "./hooks/useTasks";
 import Task from "./model/Task";
 
 function App() {
@@ -16,77 +18,24 @@ function App() {
   const handleOpenEdit = () => setOpenEdit(true);
   const handleCloseEdit = () => setOpenEdit(false);
 
-  {
-    // the tasks state
-  }
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const { setEditedTask } = useTasks();
 
-  const [editedTask, setEditedTask] = useState<Task>({} as Task);
-
-  const handleEdit = (taskId: number) => {
-    const task = tasks.find((t) => t.id == taskId);
-    if (!task) return;
-
+  const handleEdit = (task: Task) => {
     setEditedTask(task);
     handleOpenEdit();
   };
 
-  const handleStatus = (id: number) =>
-    setTasks(tasks.map((t) => (t.id === id ? { ...t, status: !t.status } : t)));
-
-  const handleDelete = (id: number) =>
-    setTasks(tasks.filter((t) => t.id !== id));
-
-  const saveToLocal = () => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  };
-
-  const loadFromLocal = () => {
-    const savedTasks = localStorage.getItem("tasks");
-    if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
-    }
-  };
-
-  const isInitialMount = useRef(true);
-
-  // Load tasks from local storage when the component mounts
-  useEffect(() => {
-    loadFromLocal();
-  }, []);
-
-  // Save tasks to local storage whenever tasks change
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      saveToLocal();
-    }
-  }, [tasks]);
-
   return (
     <div className="flex h-[100vh] flex-col overflow-auto bg-[#130020] px-[var(--pad)] py-10 font-[poppins] text-purple-50 [--pad:50px] md:[--pad:100px] lg:[--pad:120px]">
-      <AddPopUp
-        open={openAdd}
-        handleClose={handleCloseAdd}
-        setTasks={setTasks}
-        tasks={tasks}
-      />
-      <EditPopUp
-        open={openEdit}
-        tasks={tasks}
-        setTasks={setTasks}
-        editedTask={editedTask}
-        handleClose={handleCloseEdit}
-      />
-      <header>
-        <h1 className="logo text-3xl font-bold">Task Management</h1>
-        <p className="text-gray-400">
-          Let's get productive! Add your tasks below
-        </p>
-      </header>
+      <AddPopUp open={openAdd} handleClose={handleCloseAdd} />
+      <EditPopUp open={openEdit} handleClose={handleCloseEdit} />
 
+      <Header />
+
+      {
+        //Add button for adding tasks
+      }
       <div className="mt-8">
         <button
           onClick={handleOpenAdd}
@@ -99,6 +48,9 @@ function App() {
         </button>
       </div>
 
+      {
+        // toggling between the completed and not completed tasks
+      }
       <p className="mt-12 flex items-center justify-between text-gray-400">
         Tasks
         <button
@@ -110,54 +62,11 @@ function App() {
         </button>
       </p>
 
-      <div className="mt-4 flex flex-2 flex-wrap items-start gap-12 space-y-6">
-        {
-          // Card display
-        }
-        {!isCompleted
-          ? tasks.map((task, index) => (
-              <Card
-                handleEdit={handleEdit}
-                key={index}
-                task={task}
-                handleStatus={handleStatus}
-                handleDelete={handleDelete}
-              />
-            ))
-          : tasks
-              .filter((t) => t.status)
-              .map((task, index) => (
-                <Card
-                  handleEdit={handleEdit}
-                  key={index}
-                  task={task}
-                  handleStatus={handleStatus}
-                  handleDelete={handleDelete}
-                />
-              ))}
+      {
+        // all the displayed cards are in here
+      }
+      <Cards handleEdit={handleEdit} isCompleted={isCompleted} />
 
-        {
-          //If there is no task
-        }
-        {tasks.length == 0 && (
-          <div
-            className={`flex size-90 items-center justify-center gap-5 rounded-2xl bg-purple-950 p-4 transition-colors duration-100 ease-in`}
-          >
-            <p className="text-center text-2xl">No Task Yet🥳</p>
-          </div>
-        )}
-
-        {
-          // if there is no completed task
-        }
-        {isCompleted && tasks.filter((t) => t.status).length == 0 && (
-          <div
-            className={`flex size-90 items-center justify-center gap-5 rounded-2xl bg-purple-950 p-4 transition-colors duration-100 ease-in`}
-          >
-            <p className="text-center text-2xl">No Completed Task Yet😔</p>
-          </div>
-        )}
-      </div>
       <footer className="justify-self-end text-center">
         All right reserved &copy; 2025 Habib Elias
       </footer>

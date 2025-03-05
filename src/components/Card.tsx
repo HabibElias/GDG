@@ -1,14 +1,24 @@
 import { Edit, Trash2 } from "lucide-react";
 import Task from "../model/Task";
+import useTasks from "../hooks/useTasks";
 
 interface Props {
   task: Task;
-  handleStatus: (taskId: number) => void;
-  handleDelete: (taskId: number) => void;
-  handleEdit: (taskId: number) => void;
+  handleEdit: (task: Task) => void;
 }
 
-const Card = ({ task, handleStatus, handleDelete, handleEdit }: Props) => {
+const Card = ({ task, handleEdit }: Props) => {
+  const { dispatch } = useTasks();
+
+  const handleStatus = () =>
+    dispatch({
+      type: "EDIT",
+      taskId: task.id,
+      task: { ...task, status: !task.status },
+    });
+
+  const handleDelete = () => dispatch({ type: "DELETE", taskId: task.id });
+
   return (
     <div
       className={`group flex size-90 gap-5 rounded-2xl transition-all hover:scale-102 ${task.status ? "bg-teal-500" : "bg-purple-950"} p-4 duration-100 ease-in`}
@@ -52,7 +62,7 @@ const Card = ({ task, handleStatus, handleDelete, handleEdit }: Props) => {
         <p className="text-[0.8rem] text-gray-300">Status</p>
         <div
           className={`${task.status ? "bg-teal-400 text-teal-900" : "bg-red-300 text-red-900"} my-2 w-max transform cursor-pointer rounded-2xl p-2 shadow-2xs transition-transform duration-200 ease-in hover:scale-105`}
-          onClick={() => handleStatus(task.id)}
+          onClick={handleStatus}
         >
           {task.status ? "Done" : "Not Done"}
         </div>
@@ -65,17 +75,17 @@ const Card = ({ task, handleStatus, handleDelete, handleEdit }: Props) => {
           type="checkbox"
           name="status"
           id={`status-${task.id}`}
-          onChange={() => handleStatus(task.id)}
+          onChange={handleStatus}
           checked={task.status}
           className="size-7 cursor-pointer transition-transform duration-200 ease-in hover:scale-110"
         />
         <div className="flex gap-4">
           <Edit
-            onClick={() => handleEdit(task.id)}
+            onClick={() => handleEdit(task)}
             className="mb-5 cursor-pointer transition-transform duration-200 ease-in hover:scale-110 hover:text-blue-300"
           />
           <Trash2
-            onClick={() => handleDelete(task.id)}
+            onClick={handleDelete}
             className="mb-5 cursor-pointer transition-transform duration-200 ease-in hover:scale-110 hover:text-red-300"
           />
         </div>

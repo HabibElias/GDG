@@ -1,18 +1,16 @@
-import { useState, FormEvent } from "react";
-import Task from "../model/Task";
 import { Plus, X } from "lucide-react";
+import { FormEvent, useState } from "react";
+import useTasks from "../hooks/useTasks";
 
 const AddPopUp = ({
   open,
   handleClose,
-  tasks,
-  setTasks,
 }: {
   open: boolean;
   handleClose: () => void;
-  tasks: Task[];
-  setTasks: (tasks: Task[]) => void;
 }) => {
+  const { tasks, dispatch } = useTasks();
+
   const [taskTitle, setTaskTitle] = useState<string>("");
   const [taskDesc, setTaskDesc] = useState<string>("");
   const [taskDate, setTaskDate] = useState<string>("");
@@ -24,16 +22,16 @@ const AddPopUp = ({
       return;
     }
 
-    setTasks([
-      ...tasks,
-      {
+    dispatch({
+      type: "ADD",
+      task: {
         id: tasks.length ? tasks[tasks.length - 1].id + 1 : 0,
         title: taskTitle,
         desc: taskDesc,
         dueDate: new Date(taskDate),
         status: false,
       },
-    ]);
+    });
 
     setTaskTitle("");
     setTaskDate("");
