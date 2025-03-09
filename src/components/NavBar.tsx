@@ -6,7 +6,7 @@ import {
   LogOut,
   Moon,
   Sun,
-  User
+  User,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
@@ -85,7 +85,7 @@ const LoginLink = () => {
   const { dispatch } = useAuth();
   const { isLightMode } = useTheme();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     dispatch({
       type: "LOGIN",
       user: {
@@ -98,6 +98,7 @@ const LoginLink = () => {
 
     // navigate to the homepage with a new user
     navigate("/");
+    alert("Successfully Logged In 🍾🍾🎉🎉");
   };
   return (
     <button
