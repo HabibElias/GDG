@@ -5,10 +5,9 @@ import useTheme from "../hooks/useTheme";
 
 const Layout = () => {
   const { isLightMode } = useTheme();
-
   return (
     <div
-      className={`flex h-[100vh] flex-col ${isLightMode ? "bg-white text-black" : "bg-black text-white"}`}
+      className={`flex h-[100vh] flex-col ${isLightMode ? "bg-white text-black" : "bg-black text-white"} transition-colors duration-200`}
     >
       <NavBar />
       <Outlet />
