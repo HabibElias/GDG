@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --bgColor: #fff;
+  --textBlue: oklch(0.424 0.199 265.638);
+  --cardBg: #eff6ff;
+  --textColor: #000;
+  --border-color: #00000027;
+}
