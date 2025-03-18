@@ -1,153 +1,126 @@
-# React Context ( State management )
+# Hooks Deep Dive
 
-> **The****Context API****is a powerful feature of React that allows you to**
->
-> share values between components without having to pass props
->
-> manually at every level (a process known as "**prop drilling**").
+> This Project is for practicing react hooks like useState, useMemo, useCallback, useReducer..
 
-- This Project is for practicing react context for state management on the client side.
-- In this project there are two contexts, which are Auth context and Theme Context.
-- ```js
-  import { createContext } from "react";
-  import User from "../models/User";
-  import { AuthActions } from "./AuthProvider";
+## Handling string ( Counting each character )
 
-  interface AuthContextType {
-    user: User;
-    dispatch: React.Dispatch<AuthActions>;
-  }
+```js
+import { useCallback, useReducer } from "react";
 
-  const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-  export default AuthContext;
-
-
-  ///////// in the ThemeContext.tsx
-  import { createContext, Dispatch } from "react";
-
-  interface ThemeContextType {
-    isLightMode: boolean;
-    setIsLightMode: Dispatch<React.SetStateAction<boolean>>;
-  }
-
-  const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
-
-  export default ThemeContext;
-  ```
-- Both contexts have their own hook, because why call `useContext( theContextName )`  everytime when we need to use our context just call it one time and use that function everytime.
-- ```js
-  import { useContext } from "react";
-  import AuthContext from "./AuthContext";
-
-  const useAuth = () => useContext(AuthContext);
-
-  export default useAuth;
-
-  ///////in useTheme.tsx file
-
-  import { useContext } from "react";
-  import ThemeContext from "./ThemeContext";
-
-  const useTheme = () => useContext(ThemeContext);
-
-  export default useTheme;
-
-  ```
-
-  ### Providing Context
-- providing a context to a component involves wrapping the component in a context provider. i.e.
-- ```js
-  ////////////////////////////////////////
-  // This is the Provider    //
-  ////////////////////////////////////////
-  // AuthProvider.tsx
-
-  const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, dispatch] = useReducer(AuthReducer, { isLoged: false });
-    return (
-      <AuthContext.Provider value={{ user: user, dispatch: dispatch }}>
-        {children}
-      </AuthContext.Provider>
-    );
+interface WriteStr {
+  type: "WRITE";
+  payload: {
+    str: string;
   };
+}
 
-  export default AuthProvider;
+const reducer = (state: string, action: WriteStr) => {
+  if (action.type == "WRITE") {
+    if (action.payload.str.length <= 50) {
+      return action.payload.str;
+    }
+    return state;
+  }
+  return state;
+};
 
-  ///////////////////////////////////////////////////////////////////
-  // This is How the component is wraped //
-  /////////////////////////////////////////////////////////////////
-  // main.tsx
-  createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-      <AuthProvider>
-        <ThemeProvider>
-          <RouterProvider router={routes} />
-        </ThemeProvider>
-      </AuthProvider>
-    </StrictMode>,
+const useCharacterCount = () => {
+  const [chars, dispatch] = useReducer(reducer, "");
+
+  const handleChange = useCallback(
+    (e: any) => {
+      if (e.target.value.length <= 50) {
+        dispatch({
+          type: "WRITE",
+          payload: {
+            str: e.target.value,
+          },
+        });
+      }
+    },
+    [chars],
   );
 
+  return { chars, handleChange };
+};
 
-  ```
+export default useCharacterCount;
 
-  ### Using a Context
-- Using a context in a provided component looks like. i.e toggling the theme, logging in and logging out
-- ```js
-  const NavBar = () => {
-    const { isLightMode, setIsLightMode } = useTheme();
-    const { user } = useAuth();
+```
 
-    return (
-      <div className="...">
-          ...
-          {user.isLoged ? <ProfileLink /> : <LoginLink />}
-          <li>
-            <button
-              onClick={() => setIsLightMode(!isLightMode)}
-              className={`... ${!isLightMode ? "bg-white text-black" : "bg-black text-white"}`}
-            >
-              {isLightMode ? <Sun /> : <Moon />}
-            </button>
-          </li>
-        </ul>
-      </div>
-    );
+## Progress Bar, Copying to clipboard	
 
-  const LoginLink = () => {
-    const navigate = useNavigate();
-    const { dispatch } = useAuth();
-    const { isLightMode } = useTheme();
+```javascript
+import { ClipboardCheck, ClipboardList, Send } from "lucide-react";
+import { useState } from "react";
+import useCharacterCount from "../hooks/useCharacterCount";
 
-    const handleLogin = async () => {
-      dispatch({
-        type: "LOGIN",
-        user: {
-          isLoged: true,
-          name: "Habib Elias",
-          phNum: "0940827141",
-          university: "AASTU",
-        },
-      });
+const MessagePage = () => {
+  const { chars, handleChange } = useCharacterCount();
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
-      // navigate to the homepage with a new user
-      navigate("/");
-      alert("Successfully Logged In 🍾🍾🎉🎉");
-    };
-    return (
-      <button
-        onClick={handleLogin}
-        className={`"...""}`}
-      >
-        <LogIn />
-        Login
-      </button>
-    );
+  const handleCopy = () => {
+    navigator.clipboard.writeText(chars.toString());
+    setIsCopied(true);
   };
 
+  const progressBar = (chars: string) => {
+    if (chars.length < 12) return "before:w-[5%] before-bg before:bg-red-400";
+    if (chars.length < 24) return "before:w-[25%] before:bg-red-200";
+    if (chars.length < 36) return "before:w-[50%] before:bg-green-200";
+    if (chars.length < 50) return "before:w-[75%] before:bg-green-300";
+    if (chars.length >= 50) return "before:w-[100%] before:bg-green-400";
+  };
 
-  ```
+  return (
+    <div className="flex min-h-[80vh] w-max flex-col items-start justify-center break-words">
+      <p className="mb-2 font-[poppins] text-xl">Send us a Message</p>
+      <p className="mb-5 text-xs opacity-65">
+        Send us a message of at least 50 characters. We thank you for your
+        message in advance.
+      </p>
+      <textarea
+        name="chars"
+        id="chars"
+        value={chars}
+        onChange={handleChange}
+        className="h-80 max-h-150 min-h-40 w-[100%] max-w-200 min-w-100 resize p-2 font-[poppins] text-[0.9rem] ring-1 duration-200 outline-none focus:ring-(--border-color)"
+      ></textarea>
+      <div className="mt-5 flex items-center gap-3 self-end">
+        <div
+          className={`relative h-5 w-40 shadow-xl ring-1 ring-(--border-color) duration-150 before:absolute before:h-5 before:duration-300 ${progressBar(chars)}`}
+        ></div>
+        <div className={`font-[poppins] text-xs`}>{chars.length}/50</div>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <div
+          onClick={handleCopy}
+          className="flex cursor-pointer items-center gap-2 p-2 font-[poppins] text-xs ring-1 duration-150 hover:ring-(--border-color) active:text-(--border-color)"
+        >
+          {!isCopied ? (
+            <>
+              <ClipboardList className="size-5" /> copy
+            </>
+          ) : (
+            <>
+              <ClipboardCheck className="size-5" /> copied
+            </>
+          )}
+        </div>
+        <div className="flex cursor-pointer items-center gap-2 p-2 font-[poppins] text-xs ring-1 duration-150 hover:ring-(--border-color) active:text-(--border-color)">
+          <Send className="size-5" />
+          send
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MessagePage;
+
+
+```
 
 ## Deployment Link
 
-[https://react-router-r5dacm5p7-habib-elias-projects.vercel.app](https://react-router-roan-seven.vercel.app/)
+[https://react-router-kzzrd71xh-habib-elias-projects.vercel.app/]()
