@@ -48,7 +48,7 @@ export default useCharacterCount;
 
 ```
 
-## Progress Bar, Copying to clipboard	
+## Progress Bar, Copying to clipboard
 
 ```javascript
 import { ClipboardCheck, ClipboardList, Send } from "lucide-react";
@@ -123,4 +123,4 @@ export default MessagePage;
 
 ## Deployment Link
 
-[https://react-router-kzzrd71xh-habib-elias-projects.vercel.app/]()
+[https://react-router-kzzrd71xh-habib-elias-projects.vercel.app/](https://react-router-kzzrd71xh-habib-elias-projects.vercel.app/)
