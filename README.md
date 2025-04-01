@@ -21,7 +21,7 @@ This project is part of the **React Projects** series and is designed to demonst
 
 - React.js
 - JavaScript (ES6+)
-- CSS/SCSS for styling
+- tailwind for styling
 - Axios or Fetch API for HTTP requests
 
 ## Getting Started
